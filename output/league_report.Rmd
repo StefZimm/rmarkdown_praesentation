@@ -1,0 +1,70 @@
+---
+title: "Fußballliga Report"
+author: "Stefan Zimmermann"
+date: "02.07.2021"
+output: pdf_document
+params:
+  nms: Bundesliga
+  data: footballdata.csv
+---
+
+## Bericht über die `r params$nms`
+
+```{r setup, include=FALSE, message=FALSE}
+library(kableExtra)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+
+football <-  read.csv(params$data, header=TRUE, sep=",", encoding = "UTF-8")
+
+leaguedata <- football[football$League == params$nms, ]
+
+```
+
+Dieser Bericht behandelt die `r params$nms` mit den Teams `r paste0(unique(leaguedata$Team), collapse = ",")`
+
+```{r graph, echo=FALSE}
+
+data_attack<- leaguedata %>%
+  group_by(Team, Position) %>%
+  filter(League == params$nms & Position =="Forward") %>% 
+  summarise(avg_attack = median(Attack, na.rm = T))
+
+data_attack <- data_attack[order(data_attack[,3],decreasing=TRUE),]
+  
+data_defence<- leaguedata %>%
+  group_by(Team, Position) %>%
+  filter(League == params$nms & Position =="Defender") %>% 
+  summarise(avg_defence = median(Defence, na.rm = T))
+
+data_defence <- data_defence[order(data_defence[,3],decreasing=TRUE),]
+
+offense <- ggplot(data=data_attack, aes(x=reorder(Team, avg_attack), y=avg_attack)) +
+  geom_bar(stat="identity", position=position_dodge(), show.legend  = FALSE,
+           color="black", fill="grey")+
+  geom_text(aes(label=avg_attack),nudge_y = 2.75, size=3.5)+
+  ylim(0,100)+
+  theme_bw()+
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank())+
+  coord_flip()+
+  labs(title = paste0("Best Offense in ",  params$nms,  " (Median)"),
+       caption = "Data: footballdata")
+
+defense <- ggplot(data=data_defence, aes(x=reorder(Team, avg_defence), y=avg_defence)) +
+  geom_bar(stat="identity", position=position_dodge(), show.legend  = FALSE,
+           color="black", fill="grey")+
+  geom_text(aes(label=avg_defence),nudge_y = 2.75, size=3.5)+
+  ylim(0,100)+
+  theme_bw()+
+  theme(axis.title.x=element_blank(),
+        axis.title.y=element_blank())+
+  coord_flip()+
+  labs(title = paste0("Best defense in ",  params$nms,  " (Median)"),
+       caption = "Data: footballdata")
+
+offense
+defense
+```
+
