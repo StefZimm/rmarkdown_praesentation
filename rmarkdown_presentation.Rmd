@@ -165,7 +165,7 @@ knitr::include_graphics(paste0("C:/git/gitHub/rmarkdown_praesentation/png/", "YA
 knitr::include_graphics(paste0("C:/git/gitHub/rmarkdown_praesentation/png/", "YAML_04.png"))
 ```
 
-## Syntax: Markdown
+## Syntax: Texte in Markdown
 ```{r logo07, echo=FALSE}
 logo
 ```
@@ -189,7 +189,7 @@ logo
 **...**
 
 
-## Sytax: R-Chunks
+## Syntax: R-Chunks
 ```{r logo08, echo=FALSE}
 logo
 ```
